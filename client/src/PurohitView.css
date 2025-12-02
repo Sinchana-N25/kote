@@ -1,0 +1,52 @@
+/* src/PurohitView.css */
+.purohit-container {
+  font-family: "Noto Serif", serif;
+  text-align: center;
+  background: linear-gradient(to bottom, #fffaf0, #fff0d5);
+  color: #4b2e05;
+  min-height: 100vh;
+  padding: 20px;
+}
+.upload-section,
+.devotee-box {
+  border: 3px solid gold;
+  border-radius: 20px;
+  background: rgba(255, 250, 240, 0.95);
+  padding: 25px;
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+button {
+  background: linear-gradient(to bottom, #f8e38d, #f2c84b);
+  border: 2px solid #b8860b;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+th,
+td {
+  border: 1px solid #d2a679;
+  padding: 8px;
+}
+th {
+  background: #ffe9a7;
+}
+img.preview {
+  max-width: 200px;
+  border-radius: 10px;
+  margin: 10px auto;
+  display: block;
+}

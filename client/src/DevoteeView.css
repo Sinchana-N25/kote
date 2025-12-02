@@ -1,0 +1,241 @@
+/* src/DevoteeView.css */
+
+/* REQUIRED REPLACEMENT */
+.devotee-wrapper {
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Mandali", sans-serif;
+  background: linear-gradient(180deg, #fffdf8, #ffe9b3);
+  color: #4b2e1e;
+  overflow-x: hidden;
+}
+
+/* REST OF CSS FROM devotee.html */
+
+:root {
+  --gold: #d4a017;
+  --deep: #4b2e1e;
+  --cream: #fff8ec;
+  --accent: #8b0000;
+}
+
+/* REMOVED html, body block */
+
+/* Top & Bottom Rangoli bars */
+.rangoli-top,
+.rangoli-bottom {
+  width: 100%;
+  display: block;
+  background: transparent;
+}
+
+/* Container */
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+}
+
+header {
+  text-align: center;
+  margin-top: 10px;
+}
+h1 {
+  margin: 8px 0 6px;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.6px;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.18);
+}
+#date {
+  font-size: 1.1rem;
+  color: #7a4a2b;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+/* Photo area */
+#photoWrap {
+  position: relative;
+  margin: 12px auto;
+  width: 95%;
+  max-width: 720px;
+  padding: 18px;
+  border-radius: 22px;
+  background: radial-gradient(circle at 10% 10%, #fff8e6, #fff2ca);
+  box-shadow: 0 10px 30px rgba(210, 160, 30, 0.12),
+    inset 0 2px 6px rgba(255, 255, 255, 0.6);
+  overflow: visible;
+}
+
+#photoWrap::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  bottom: 6px;
+  border-radius: 16px;
+  pointer-events: none;
+  box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.06) inset;
+}
+
+#photo {
+  width: 100%;
+  display: block;
+  border-radius: 14px;
+  border: 3px solid rgba(212, 160, 23, 0.95);
+  transition: transform 0.45s ease, box-shadow 0.45s ease;
+  background: #fef9f2;
+}
+#photo:hover {
+  transform: scale(1.01);
+  box-shadow: 0 18px 40px rgba(212, 160, 23, 0.12);
+}
+
+/* Hanging lamps */
+.lamp {
+  position: fixed;
+  top: 6px;
+  width: 78px;
+  height: auto;
+  transform-origin: top center;
+  z-index: 3;
+  pointer-events: none;
+}
+.lamp.left {
+  left: calc(50% - 420px);
+}
+.lamp.right {
+  right: calc(50% - 420px);
+}
+
+/* swing animations */
+@keyframes lamp-swing-left {
+  0% {
+    transform: rotate(-9deg);
+  }
+  50% {
+    transform: rotate(9deg);
+  }
+  100% {
+    transform: rotate(-9deg);
+  }
+}
+@keyframes lamp-swing-right {
+  0% {
+    transform: rotate(9deg);
+  }
+  50% {
+    transform: rotate(-9deg);
+  }
+  100% {
+    transform: rotate(9deg);
+  }
+}
+.lamp.left {
+  animation: lamp-swing-left 3.8s ease-in-out infinite;
+}
+.lamp.right {
+  animation: lamp-swing-right 3.8s ease-in-out infinite;
+}
+
+/* Flame flicker */
+.flame {
+  filter: drop-shadow(0 0 6px rgba(255, 180, 60, 0.9));
+  transform-origin: center;
+  animation: flame-flicker 0.9s infinite;
+}
+@keyframes flame-flicker {
+  0% {
+    transform: scaleY(1) translateY(0);
+    opacity: 1;
+  }
+  30% {
+    transform: scaleY(1.07) translateY(-1px);
+    opacity: 0.95;
+  }
+  60% {
+    transform: scaleY(0.95) translateY(1px);
+    opacity: 0.88;
+  }
+  100% {
+    transform: scaleY(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Floating petals */
+.petal {
+  position: fixed;
+  border-radius: 55%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.95;
+  z-index: 1;
+  transform: translateZ(0);
+}
+
+/* devotee details */
+#details {
+  margin-top: 14px;
+  font-size: 1.45rem;
+  color: var(--accent);
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+footer {
+  margin: 30px 0 50px;
+  text-align: center;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.6px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .lamp.left {
+    left: calc(50% - 380px);
+  }
+  .lamp.right {
+    right: calc(50% - 380px);
+  }
+}
+@media (max-width: 900px) {
+  .lamp.left {
+    left: 8px;
+    transform-origin: top left;
+    animation: lamp-swing-left 3.4s ease-in-out infinite;
+  }
+  .lamp.right {
+    right: 8px;
+    transform-origin: top right;
+    animation: lamp-swing-right 3.4s ease-in-out infinite;
+  }
+  .lamp {
+    width: 52px;
+  }
+  #photoWrap {
+    padding: 12px;
+  }
+}
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+  .lamp {
+    width: 44px;
+    top: 8px;
+  }
+  #details {
+    font-size: 1.05rem;
+  }
+}
