@@ -2,10 +2,12 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import PurohitView from "./PurohitView";
 import DevoteeView from "./DevoteeView";
+import ScrollToTop from "./ScrollToTop";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       {/* Temporary Nav for you to access pages */}
       <nav style={{ padding: "10px", background: "#eee", textAlign: "center" }}>
         <Link to="/" style={{ margin: "0 10px" }}>
