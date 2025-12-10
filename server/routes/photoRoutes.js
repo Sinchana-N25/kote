@@ -3,6 +3,7 @@ const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const DailyPhoto = require("../models/DailyPhoto");
 const fs = require("fs");
+const os = require("os");
 
 // Configure Cloudinary
 cloudinary.config({
@@ -11,8 +12,18 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Configure Multer (Temporary storage for upload)
-const upload = multer({ dest: "uploads/" });
+// 2. Configure Multer to use the Temporary System Folder (/tmp)
+// Vercel only allows writing files to /tmp
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, os.tmpdir());
+  },
+  filename: function (req, file, cb) {
+    // Keep original name or add timestamp to avoid duplicates
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+const upload = multer({ storage: storage });
 
 // UPLOAD Route
 router.post("/upload", upload.single("photo"), async (req, res) => {
