@@ -2,35 +2,53 @@
 const router = require("express").Router();
 const SpecialPuja = require("../models/SpecialPuja");
 
-// GET: Fetch upcoming Special Puja and its devotees
+// 1. GET Upcoming Puja
 router.get("/upcoming", async (req, res) => {
   try {
-    const today = new Date();
-    // Find the next upcoming Sankashta (or Pournami)
-    const upcomingPuja = await SpecialPuja.findOne({
-      date: { $gte: today },
-    }).sort({ date: 1 });
-    res.json(upcomingPuja);
+    // Find the one marked as upcoming OR the latest future date
+    const puja = await SpecialPuja.findOne({ isUpcoming: true });
+    res.json(puja);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Register a new devotee for the upcoming puja
-router.post("/register/:pujaId", async (req, res) => {
+// 2. CREATE New Special Puja Event (Needed for your Admin Panel)
+router.post("/create", async (req, res) => {
+  const { pujaType, dateStr } = req.body;
   try {
-    const { name, gothra, nakshatra, phoneNumber } = req.body;
+    // Mark old ones as finished
+    await SpecialPuja.updateMany({ isUpcoming: true }, { isUpcoming: false });
 
-    const updatedPuja = await SpecialPuja.findByIdAndUpdate(
-      req.params.pujaId,
-      { $push: { devotees: { name, gothra, nakshatra, phoneNumber } } },
-      { new: true, runValidators: true }
-    );
+    // Create new
+    const newPuja = new SpecialPuja({
+      pujaType, // "Sankashta" or "Pournami"
+      date: new Date(), // Using current date for sorting, dateStr for display
+      dateStr,
+      isUpcoming: true,
+      devotees: [],
+    });
 
-    if (!updatedPuja)
-      return res.status(404).json({ message: "Puja not found." });
+    await newPuja.save();
+    res.json(newPuja);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    res.json(updatedPuja);
+// 3. ADD Devotee (Simplified for Admin Panel)
+router.post("/add-devotee", async (req, res) => {
+  const { name, gothra, nakshatra, phoneNumber, amount } = req.body;
+  try {
+    const puja = await SpecialPuja.findOne({ isUpcoming: true });
+    if (!puja)
+      return res
+        .status(404)
+        .json({ error: "No upcoming special puja active." });
+
+    puja.devotees.push({ name, gothra, nakshatra, phoneNumber, amount });
+    await puja.save();
+    res.json(puja);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

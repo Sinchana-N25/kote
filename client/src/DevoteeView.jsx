@@ -3,6 +3,7 @@ import axios from "axios";
 import { API_URL } from "./config";
 import { strings } from "./i18n"; // IMPORTED
 import "./DevoteeView.css";
+import SpecialPujaAdmin from "./SpecialPujaAdmin";
 
 const DevoteeView = () => {
   const [photoUrl, setPhotoUrl] = useState("");
@@ -238,6 +239,7 @@ const DevoteeView = () => {
               >
                 {specialPuja.pujaType} - {specialPuja.dateStr}
               </p>
+              <SpecialPujaAdmin lang={lang} />
             </div>
           )}
         </main>
