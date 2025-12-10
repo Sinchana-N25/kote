@@ -1,5 +1,4 @@
 // client/src/i18n.js
-
 export const strings = {
   en: {
     // Portal Titles
@@ -15,9 +14,14 @@ export const strings = {
     P_GOTHRA: "Gothra",
     P_NAKSHATRA: "Nakshatra",
     P_RAASHI: "Raashi",
+    P_AND_FAMILY: "and family",
     // Devotee View
     D_MESSAGE: "May the divine grace of Sri Satyaganapathy bless every devotee",
     D_FOOTER: "Daily Puja Blessings",
+    D_LOADING: "Loading Photo...",
+    D_NO_PHOTO: "Photo not uploaded yet",
+    D_AND_FAMILY: "and family",
+    D_UPCOMING: "Upcoming Special Puja",
   },
   kn: {
     T_TITLE: "ಶ್ರೀ ಸತ್ಯಗಣಪತಿ ದೇವಸ್ಥಾನ",
@@ -32,8 +36,13 @@ export const strings = {
     P_GOTHRA: "ಗೋತ್ರ",
     P_NAKSHATRA: "ನಕ್ಷತ್ರ",
     P_RAASHI: "ರಾಶಿ",
+    P_AND_FAMILY: "ಮತ್ತು ಕುಟುಂಬ",
     // Devotee View
     D_MESSAGE: "ಶ್ರೀ ಸತ್ಯಗಣಪತಿಯ ದಿವ್ಯ ಕೃಪೆಯು ಎಲ್ಲ ಭಕ್ತರ ಮೇಲೆ ಸದಾ ಇರಲಿ",
     D_FOOTER: "ದಿನನಿತ್ಯದ ಪೂಜಾ ಆಶೀರ್ವಾದ",
+    D_LOADING: "ಫೋಟೋ ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+    D_NO_PHOTO: "ಫೋಟೋ ಇನ್ನೂ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ",
+    D_AND_FAMILY: "ಮತ್ತು ಕುಟುಂಬ",
+    D_UPCOMING: "ಮುಂಬರುವ ವಿಶೇಷ ಪೂಜೆ",
   },
 };

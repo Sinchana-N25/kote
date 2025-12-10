@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "./config";
+import { strings } from "./i18n"; // IMPORTED
 import "./DevoteeView.css";
 
 const DevoteeView = () => {
   const [photoUrl, setPhotoUrl] = useState("");
-  const [mainDevoteeLine, setMainDevoteeLine] = useState(""); // Stores "Amit Sharma and Family"
+  const [mainDevoteeLine, setMainDevoteeLine] = useState("");
   const [dateStr, setDateStr] = useState("");
   const [loading, setLoading] = useState(true);
+  const [specialPuja, setSpecialPuja] = useState(null);
+
+  // Language State
+  const [lang, setLang] = useState("kn");
+  const S = strings[lang]; // Shortcut for current language strings
 
   useEffect(() => {
     const today = new Date();
+    // Simple date formatting
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDateStr(today.toLocaleDateString("en-GB"));
 
@@ -26,23 +33,52 @@ const DevoteeView = () => {
         setLoading(false);
       });
 
-    // 2. Fetch Devotees List for the name display
+    // 2. Fetch Devotees List (Re-runs when lang changes to update 'and family')
     axios
       .get(`${API_URL}/devotees/today`)
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          // If there are multiple families, we join them, otherwise just show the first one
           const names = res.data
-            .map((d) => `${d.mainDevotee} and family`)
+            .map((d) => `${d.mainDevotee} ${S.D_AND_FAMILY}`)
             .join(" & ");
           setMainDevoteeLine(names);
         }
       })
       .catch((err) => console.log("Devotee fetch error", err));
-  }, []);
+
+    // 3. Fetch Upcoming Special Puja
+    axios
+      .get(`${API_URL}/special-puja/upcoming`)
+      .then((res) => {
+        if (res.data) setSpecialPuja(res.data);
+      })
+      .catch((err) => console.log("Special Puja fetch error", err));
+  }, [lang, S.D_AND_FAMILY]); // Dependency ensures text updates when language toggles
 
   return (
     <div className="devotee-wrapper">
+      {/* LANGUAGE SELECTOR - Absolute Top Right */}
+      <div style={{ textAlign: "right", padding: "10px 0" }}>
+        <select
+          value={lang}
+          onChange={(e) => setLang(e.target.value)}
+          style={{
+            padding: "5px 10px",
+            marginRight: "15px",
+            borderRadius: "5px",
+            border: "1px solid #b8860b",
+            background: "#fff8e1",
+            color: "#4b2e1e",
+            fontWeight: "bold",
+            cursor: "pointer",
+            outline: "none",
+          }}
+        >
+          <option value="en">English</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </div>
+
       {/* Top Rangoli */}
       <svg
         className="rangoli-top"
@@ -126,8 +162,10 @@ const DevoteeView = () => {
 
       <div className="container">
         <header>
-          <h1>Today's Special Puja</h1>
-          <div id="date">Date: {dateStr}</div>
+          <h1>{S.T_PUJA_TODAY}</h1>
+          <div id="date">
+            {S.T_DATE}: {dateStr}
+          </div>
         </header>
 
         <main>
@@ -142,7 +180,7 @@ const DevoteeView = () => {
                   color: "#b8860b",
                 }}
               >
-                {loading ? "Loading Photo..." : "Photo not uploaded yet"}
+                {loading ? S.D_LOADING : S.D_NO_PHOTO}
               </div>
             )}
           </div>
@@ -158,7 +196,7 @@ const DevoteeView = () => {
                 textShadow: "0 1px 4px rgba(0,0,0,0.1)",
               }}
             >
-              May the divine grace of Sri Satyaganapathy bless every devotee
+              {S.D_MESSAGE}
             </p>
 
             {/* The Dynamic Name (Amit Sharma and family) */}
@@ -175,8 +213,35 @@ const DevoteeView = () => {
               </p>
             )}
           </div>
+
+          {/* --- SPECIAL PUJA SECTION --- */}
+          {specialPuja && (
+            <div
+              style={{
+                marginTop: "40px",
+                padding: "20px",
+                background: "rgba(255, 248, 225, 0.9)",
+                borderRadius: "10px",
+                border: "1px dashed #b8860b",
+                textAlign: "center",
+              }}
+            >
+              <h3 style={{ color: "#b8860b", margin: "0 0 10px 0" }}>
+                {S.D_UPCOMING}
+              </h3>
+              <p
+                style={{
+                  fontSize: "1.2rem",
+                  color: "#8b0000",
+                  fontWeight: "bold",
+                }}
+              >
+                {specialPuja.pujaType} - {specialPuja.dateStr}
+              </p>
+            </div>
+          )}
         </main>
-        <footer>Daily Puja Blessings</footer>
+        <footer>{S.D_FOOTER}</footer>
       </div>
 
       <svg
