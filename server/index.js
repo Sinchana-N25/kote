@@ -12,10 +12,12 @@ app.use(cors());
 // Import Routes
 const devoteeRoutes = require("./routes/devoteeRoutes");
 const photoRoutes = require("./routes/photoRoutes");
+const specialPujaRoutes = require("./routes/specialPujaRoutes");
 
 // Use Routes
 app.use("/api/devotees", devoteeRoutes);
 app.use("/api/photos", photoRoutes);
+app.use("/api/special-puja", specialPujaRoutes);
 
 // Database Connection
 mongoose
