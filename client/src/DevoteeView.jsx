@@ -216,32 +216,8 @@ const DevoteeView = () => {
           </div>
 
           {/* --- SPECIAL PUJA SECTION --- */}
-          {specialPuja && (
-            <div
-              style={{
-                marginTop: "40px",
-                padding: "20px",
-                background: "rgba(255, 248, 225, 0.9)",
-                borderRadius: "10px",
-                border: "1px dashed #b8860b",
-                textAlign: "center",
-              }}
-            >
-              <h3 style={{ color: "#b8860b", margin: "0 0 10px 0" }}>
-                {S.D_UPCOMING}
-              </h3>
-              <p
-                style={{
-                  fontSize: "1.2rem",
-                  color: "#8b0000",
-                  fontWeight: "bold",
-                }}
-              >
-                {specialPuja.pujaType} - {specialPuja.dateStr}
-              </p>
-              <SpecialPujaAdmin lang={lang} />
-            </div>
-          )}
+          {/* --- SPECIAL PUJA SECTION --- */}
+          {specialPuja && <SpecialPujaAdmin lang={lang} />}
         </main>
         <footer>{S.D_FOOTER}</footer>
       </div>

@@ -1,56 +1,106 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "./config";
-import { strings } from "./i18n"; // Import translations
+import { strings } from "./i18n";
+
+// --- 1. PUJA OPTIONS LIST ---
+const PUJA_OPTIONS = [
+  {
+    id: "Archane",
+    price: 20,
+    en: "Archane",
+    kn: "ಅರ್ಚನೆ",
+  },
+  {
+    id: "Abhisheka",
+    price: 250,
+    en: "Abhisheka",
+    kn: "ಅಭಿಷೇಕ",
+  },
+  {
+    id: "Sankashta - Monthly",
+    price: 100,
+    en: "Sankashta - Monthly",
+    kn: "ಸಂಕಷ್ಟ ಚತುರ್ಥಿ",
+  },
+  {
+    id: "Sankashta - Yearly",
+    price: 1200,
+    en: "Sankashta - Yearly",
+    kn: "ಸಂಕಷ್ಟ ಚತುರ್ಥಿ - ವಾರ್ಷಿಕ",
+  },
+  {
+    id: "Birthday/Anniversary",
+    price: 250,
+    en: "Special Puja: Birthday/Anniversary",
+    kn: "ಜನ್ಮದಿನ/ ಮದುವೆ ವಾರ್ಷಿಕೋತ್ಸವ ವಿಶೇಷ ಪೂಜೆ",
+  },
+  {
+    id: "Annadana",
+    price: 0,
+    en: "Annadana (Any Amount)",
+    kn: "ಅನ್ನದಾನ (ನಿಮ್ಮ ಇಚ್ಛೆಯ ಮೊತ್ತ)",
+    isCustom: true, // Only this triggers "Any Amount" text
+  },
+  {
+    id: "Benne Alankara (No Butter)",
+    price: 500,
+    en: "Benne Alankara (Butter not included) [Devotees are required to bring 2kgs of butter]",
+    kn: "ಬೆಣ್ಣೆ ಅಲಂಕಾರ (ಬೆಣ್ಣೆ ರಹಿತ) [ದಾನಿಗಳು 2 ಕಿ. ಗ್ರಾಂ. ಬೆಣ್ಣೆ ತರಬೇಕು]",
+    note_en: "Devotees must bring 2kg butter",
+    note_kn: "ಭಕ್ತರು 2 ಕೆಜಿ ಬೆಣ್ಣೆಯನ್ನು ತರಬೇಕು",
+  },
+  {
+    id: "Benne Alankara (With Butter)",
+    price: 1000,
+    en: "Benne Alankara (Butter included)",
+    kn: "ಬೆಣ್ಣೆ ಅಲಂಕಾರ (ಬೆಣ್ಣೆ ಸಹಿತ)",
+  },
+];
 
 const adminStrings = {
   en: {
     active: "Active",
     switch: "Switch / Create New",
-    add_to: "Add Devotee to",
+    cancel: "Cancel / Back",
+    add_to: "Register for",
     phone: "Phone",
-    add_btn: "Add Devotee",
+    add_btn: "Register Devotee",
     registered: "Registered Devotees",
     scan: "Scan to Pay",
     amount: "Amount",
+    any_amount: "Any Amount",
     raashi: "Raashi",
     family_title: "Family Members",
     add_fam: "+ Add Member",
     fam_name: "Name",
     fam_nak: "Nakshatra",
-    cancel: "Cancel / Back",
   },
   kn: {
     active: "ಸಕ್ರಿಯ",
     switch: "ಬದಲಾಯಿಸಿ / ಹೊಸದನ್ನು ರಚಿಸಿ",
-    add_to: "ವಿಶೇಷ ಪೂಜೆಗೆ ಸೇರಿಸಿ:",
+    cancel: "ರದ್ದುಮಾಡಿ / ಹಿಂದಕ್ಕೆ",
+    add_to: "ನೋಂದಾಯಿಸಿ:",
     phone: "ದೂರವಾಣಿ",
-    add_btn: "ಭಕ್ತರನ್ನು ಸೇರಿಸಿ",
+    add_btn: "ಭಕ್ತರನ್ನು ನೋಂದಾಯಿಸಿ",
     registered: "ನೋಂದಾಯಿತ ಭಕ್ತರು",
     scan: "ಪಾವತಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
     amount: "ಮೊತ್ತ",
+    any_amount: "ನಿಮ್ಮ ಇಚ್ಛೆಯ ಮೊತ್ತ",
     raashi: "ರಾಶಿ",
     family_title: "ಕುಟುಂಬ ಸದಸ್ಯರು",
     add_fam: "+ ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ",
     fam_name: "ಹೆಸರು",
     fam_nak: "ನಕ್ಷತ್ರ",
-    cancel: "ರದ್ದುಮಾಡಿ / ಹಿಂದಕ್ಕೆ",
   },
 };
 
-const PUJA_PRICES = {
-  Sankashta: 101,
-  Pournami: 201, // Example
-  "Vinayaka Chaturthi": 501,
-};
-
-const SpecialPujaAdmin = ({ lang = "kn" }) => {
-  // Accept lang prop, default to English
+const SpecialPujaAdmin = ({ lang = "en" }) => {
   const [activePuja, setActivePuja] = useState(null);
-  const [newType, setNewType] = useState("Sankashta");
+
+  const [newType, setNewType] = useState(PUJA_OPTIONS[0].id);
   const [newDate, setNewDate] = useState("");
 
-  // Devotee Form State
   const [devName, setDevName] = useState("");
   const [devGothra, setDevGothra] = useState("");
   const [devNakshatra, setDevNakshatra] = useState("");
@@ -58,7 +108,7 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
   const [devPhone, setDevPhone] = useState("");
   const [familyMembers, setFamilyMembers] = useState([]);
 
-  const S = strings[lang]; // Shortcut for translations
+  const S = strings[lang];
   const A = adminStrings[lang];
 
   useEffect(() => {
@@ -73,17 +123,29 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
       .catch((err) => console.error(err));
   };
 
+  // --- HELPER: Handles Legacy "Sankashta" Mapping ---
+  // This fixes the "Active: Sankashta" (English) issue and the Amount issue
+  const getOptionDetails = (type) => {
+    if (!type) return null;
+    // Map old "Sankashta" to new "Sankashta - Monthly"
+    if (type === "Sankashta") {
+      return PUJA_OPTIONS.find((p) => p.id === "Sankashta - Monthly");
+    }
+    return PUJA_OPTIONS.find((p) => p.id === type);
+  };
+
   const handleCreate = async () => {
     if (!newDate) return alert("Please pick a date");
     const dateObj = new Date(newDate);
     const dateStr = dateObj.toLocaleDateString("en-GB");
 
+    // Always use the ID from the list
     await axios.post(`${API_URL}/special-puja/create`, {
       pujaType: newType,
       dateStr: dateStr,
     });
     fetchUpcoming();
-    alert("New Special Puja Created!");
+    alert("New Event Created!");
   };
 
   // --- Family Logic ---
@@ -104,31 +166,49 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
     const updated = familyMembers.filter((_, i) => i !== index);
     setFamilyMembers(updated);
   };
-  // --------------------
 
   const handleAddDevotee = async (e) => {
     e.preventDefault();
     if (!activePuja) return alert("No active puja to add to.");
-    const basePrice = PUJA_PRICES[activePuja.pujaType] || 101;
+
+    // Use Helper to find price
+    const currentOption = getOptionDetails(activePuja.pujaType);
+    const finalPrice = currentOption ? currentOption.price : 0;
+
     await axios.post(`${API_URL}/special-puja/add-devotee`, {
       name: devName,
       gothra: devGothra,
       nakshatra: devNakshatra,
       raashi: devRaashi,
       phoneNumber: devPhone,
-      amount: basePrice,
+      amount: finalPrice,
       familyMembers: familyMembers,
     });
 
     setDevName("");
     setDevGothra("");
     setDevNakshatra("");
+    setDevRaashi("");
     setDevPhone("");
+    setFamilyMembers([]);
     fetchUpcoming();
   };
 
-  // Helper to get current price safely
-  const currentPrice = activePuja ? PUJA_PRICES[activePuja.pujaType] || 101 : 0;
+  // --- DISPLAY VARIABLES ---
+  const currentOption = activePuja
+    ? getOptionDetails(activePuja.pujaType)
+    : null;
+  // If not found, default to false so "Any Amount" doesn't show up for errors
+
+  // Note Logic
+  const note = lang === "kn" ? currentOption?.note_kn : currentOption?.note_en;
+
+  // Dynamic Name (Handles translations properly now)
+  const displayPujaName = currentOption
+    ? lang === "kn"
+      ? currentOption.kn
+      : currentOption.en
+    : activePuja?.pujaType || "";
 
   return (
     <div
@@ -146,46 +226,53 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
 
       {!activePuja ? (
         <div style={{ marginBottom: "20px", textAlign: "center" }}>
-          <h3>Create new event:</h3>
+          <h3>Create New Event:</h3>
+
           <select
             value={newType}
             onChange={(e) => setNewType(e.target.value)}
-            style={{ padding: "8px", marginRight: "10px" }}
+            style={{ padding: "8px", marginRight: "10px", maxWidth: "200px" }}
           >
-            <option value="Sankashta">Sankashta</option>
-            <option value="Pournami">Pournami</option>
+            {PUJA_OPTIONS.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                {lang === "kn" ? opt.kn : opt.en}
+              </option>
+            ))}
           </select>
+
           <input
             type="date"
             onChange={(e) => setNewDate(e.target.value)}
             style={{ padding: "8px", marginRight: "10px" }}
           />
-          <button
-            onClick={handleCreate}
-            style={{
-              padding: "8px 16px",
-              background: "#b8860b",
-              color: "#fff",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            Create
-          </button>
-          <button
-            onClick={fetchUpcoming} // Simply re-fetches the active event
-            style={{
-              marginLeft: "10px",
-              padding: "8px 16px",
-              background: "#ccc",
-              color: "#333",
-              border: "none",
-              cursor: "pointer",
-              borderRadius: "2px",
-            }}
-          >
-            {A.cancel || "Back"}
-          </button>
+
+          <div style={{ marginTop: "10px" }}>
+            <button
+              onClick={handleCreate}
+              style={{
+                padding: "8px 16px",
+                background: "#b8860b",
+                color: "#fff",
+                border: "none",
+                cursor: "pointer",
+                marginRight: "10px",
+              }}
+            >
+              Create
+            </button>
+            <button
+              onClick={fetchUpcoming}
+              style={{
+                padding: "8px 16px",
+                background: "#ccc",
+                color: "#333",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              {A.cancel}
+            </button>
+          </div>
         </div>
       ) : (
         <div
@@ -199,7 +286,7 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
         >
           <h3 style={{ margin: "0 0 10px 0" }}>
             {A.active}:{" "}
-            <span style={{ color: "#d32f2f" }}>{activePuja.pujaType}</span>{" "}
+            <span style={{ color: "#d32f2f" }}>{displayPujaName}</span>{" "}
             {lang === "en" ? "on" : "ದಿನಾಂಕ"} {activePuja.dateStr}
           </h3>
           <button
@@ -214,8 +301,23 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
       {activePuja && (
         <>
           <h3 style={{ textAlign: "center", color: "#4b2e1e" }}>
-            {A.add_to} {activePuja.pujaType}
+            {A.add_to} <br />
+            <span style={{ color: "#d35400" }}>{displayPujaName}</span>
           </h3>
+
+          {note && (
+            <div
+              style={{
+                textAlign: "center",
+                color: "red",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                fontSize: "0.9rem",
+              }}
+            >
+              ⚠️ {note}
+            </div>
+          )}
 
           <form
             onSubmit={handleAddDevotee}
@@ -228,7 +330,6 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
               margin: "0 auto",
             }}
           >
-            {/* MAIN DEVOTEE INPUTS */}
             <div
               style={{
                 display: "grid",
@@ -263,8 +364,6 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
                 onChange={(e) => setDevRaashi(e.target.value)}
                 style={{ padding: "8px" }}
               />
-
-              {/* Phone spans full width */}
               <input
                 placeholder={A.phone}
                 value={devPhone}
@@ -273,7 +372,6 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
               />
             </div>
 
-            {/* FAMILY MEMBERS SECTION */}
             <div
               style={{
                 width: "100%",
@@ -355,7 +453,6 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
               ))}
             </div>
 
-            {/* SUBMIT BUTTON */}
             <button
               type="submit"
               style={{
@@ -374,7 +471,6 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
             </button>
           </form>
 
-          {/* LIST */}
           <div style={{ marginTop: "20px" }}>
             <h4 style={{ textAlign: "center" }}>
               {A.registered} ({activePuja.devotees.length})
@@ -408,7 +504,6 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
             </ul>
           </div>
 
-          {/* QR CODE */}
           <div
             style={{
               marginTop: "30px",
@@ -418,11 +513,9 @@ const SpecialPujaAdmin = ({ lang = "kn" }) => {
             }}
           >
             <h4 style={{ color: "#b8860b", margin: "0 0 10px 0" }}>{A.scan}</h4>
-            <h3 style={{ color: "#d35400", margin: "5px 0" }}>
-              {A.amount}: ₹{currentPrice}
-            </h3>
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=temple@upi&pn=Temple&am=${currentPrice}`}
+              // If isCustom, QR will not have pre-filled amount
+              src="/kote qr.jpg"
               alt="Temple QR"
               style={{
                 border: "5px solid #fff",
